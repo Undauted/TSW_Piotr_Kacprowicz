@@ -1,0 +1,50 @@
+extends layout
+
+block content
+
+  #banner.jumbotron
+    h2 Szachy - strona główna
+     
+
+  .container
+    .row
+      .col-sm-6
+        h2 Nowa Gra
+        form#startForm(action="/start", method="POST", role="form")
+          .form-group
+            label Wybierz kolor
+            div
+              .btn-group(data-toggle="buttons")
+                label.btn.btn-default.active
+                  input(type="radio", name="player-color", value="white", checked="checked")
+                  | Białe
+                label.btn.btn-default
+                  input(type="radio", name="player-color", value="black")
+                  | Czarne
+          .form-group
+            label(for="playerName") Nick
+            input#playerName.form-control(type="text", name="player-name", placeholder="Player 1")
+          button.btn.btn-primary(type="submit") Rozpocznij grę
+      .col-sm-6
+        h2 Dołącz do gry
+        form#joinForm(action="/join", method="POST", role="form")
+          .form-group
+            label(for="gameID") ID Stołu
+            input#gameID.form-control(type="text", name="game-id")
+          .form-group
+            label(for="playerName") Nick
+            input#playerName.form-control(type="text", name="player-name", placeholder="Player 2")
+          button.btn.btn-primary(type="submit") Dołącz
+
+
+
+      #pokoje
+        Pokoje
+        #rooms
+      #wiadomosc
+        #conversation
+        input#data(style='width:200px;')
+        input#datasend(type='button', value='send')
+
+  script(src="/js/jquery.min.js")
+  script(src="/js/bootstrap.min.js")
