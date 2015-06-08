@@ -7,7 +7,7 @@ block content
      
 
   .container
-    .row
+    .row        
       .col-sm-6
         h2 Nowa Gra
         form#startForm(action="/start", method="POST", role="form")
@@ -36,15 +36,7 @@ block content
             input#playerName.form-control(type="text", name="player-name", placeholder="Player 2")
           button.btn.btn-primary(type="submit") Dołącz
 
-
-
-      #pokoje
-        Pokoje
-        #rooms
-      #wiadomosc
-        #conversation
-        input#data(style='width:200px;')
-        input#datasend(type='button', value='send')
-
+    
+    
   script(src="/js/jquery.min.js")
   script(src="/js/bootstrap.min.js")

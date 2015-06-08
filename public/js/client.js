@@ -1,6 +1,8 @@
-var Client = (function(window) {
 
-  var socket      = null;
+var Client = (function(window) {
+  
+    
+var socket      = null;
   var gameState   = null;
 
   var gameID      = null;
@@ -610,5 +612,8 @@ var Client = (function(window) {
   };
 
   return init;
+    
 
+
+ 
 }(window));

@@ -11,14 +11,16 @@ var app    = express()
   , io     = socket.listen(server);
 
 var DB = new GameStore();
-
-var cookieParser = express.cookieParser('I wish you were an oatmeal cookie')
+var people = {};
+var cookieParser = express.cookieParser('Cookie')
   , sessionStore = new express.session.MemoryStore();
 
 // Settings
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+app.engine('jade', require('jade').__express);
+
 
 
 // Middleware
@@ -27,7 +29,7 @@ app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(cookieParser);
 app.use(express.session({ store: sessionStore }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname + '/public'));
 app.use(app.router);
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
@@ -53,63 +55,6 @@ io.set('authorization', function (handshakeData, callback) {
 // Attach routes
 httpRoutes.attach(app, DB);
 socketRoutes.attach(io, DB);
-
-var oneDay = 86400000;
-
-
-
-
-var usernames = {};
-
-
-var rooms = ['pokój 1','pokój 2','pokój 3'];
-
-io.sockets.on("connection", function (socket) {
-    socket.on('adduser', function(username){
-		
-		socket.username = username;
-
-		socket.room = 'pokój 1';
-		
-		usernames[username] = username;
-	
-		socket.join('pokój 1');
-		
-		socket.emit('updatechat', '</br>Serwer', 'dołączyłeś do pokój 1 </br>');
-	
-		socket.broadcast.to('pokój 1').emit('updatechat', '</br>Serwer', username + ' dołączył do pokoju </br>');
-		socket.emit('updaterooms', rooms, 'pokój 1');
-	});
-    
-
-	socket.on('sendchat', function (data) {
-		
-		io.sockets.in(socket.room).emit('updatechat', socket.username, data);
-	});
-	
-	socket.on('switchRoom', function(newroom){
-		socket.leave(socket.room);
-		socket.join(newroom);
-		socket.emit('updatechat', '</br>Serwer', 'dołączyłeś do '+ newroom+'</br>');
-
-		socket.broadcast.to(socket.room).emit('updatechat', '</br>Serwer', socket.username+' opuścił pokój </br>');
-		
-		socket.room = newroom;
-		socket.broadcast.to(newroom).emit('updatechat', '</br>Serwer', socket.username+' dołączył do pokoju </br>');
-		socket.emit('updaterooms', rooms, newroom);
-	});
-	
-	
-	socket.on('disconnect', function(){
-		
-		delete usernames[socket.username];
-		io.sockets.emit('updateusers', usernames);
-		socket.broadcast.emit('updatechat', '</br>Serwer', socket.username + ' rozłączył się </br>');
-		socket.leave(socket.room);
-	});
-    
-    
-});
 
 
 // And away we go
