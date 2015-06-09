@@ -23,9 +23,7 @@ var socket      = null;
   var forfeitPrompt       = null;
 
 
-  /**
-   * Initialize the UI
-   */
+  
   var init = function(config) {
     gameID      = config.gameID;
     playerColor = config.playerColor;
@@ -43,28 +41,26 @@ var socket      = null;
     gameClasses = "white black pawn rook knight bishop queen king not-moved empty selected " +
                   "valid-move valid-capture valid-en-passant-capture valid-castle last-move";
 
-    // Create socket connection
+    
     socket = io.connect();
 
-    // Define board based on player's perspective
+   
     assignSquares();
 
-    // Attach event handlers
+  
     attachDOMEventHandlers();
     attachSocketEventHandlers();
 
-    // Initialize modal popup windows
+    
     gameOverMessage.modal({show: false, keyboard: false, backdrop: 'static'});
     pawnPromotionPrompt.modal({show: false, keyboard: false, backdrop: 'static'});
     forfeitPrompt.modal({show: false, keyboard: false, backdrop: 'static'});
 
-    // Join game
+    
     socket.emit('join', gameID);
   };
 
-  /**
-   * Assign square IDs and labels based on player's perspective
-   */
+ 
   var assignSquares = function() {
     var fileLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     var rankLabels = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -85,22 +81,20 @@ var socket      = null;
       squareIDs.reverse();
     }
 
-    // Set file and rank labels
+   
     $('.top-edge').each(function(i) { $(this).text(fileLabels[i]); });
     $('.right-edge').each(function(i) { $(this).text(rankLabels[i]); });
     $('.bottom-edge').each(function(i) { $(this).text(fileLabels[i]); });
     $('.left-edge').each(function(i) { $(this).text(rankLabels[i]); });
 
-    // Set square IDs
+  
     squares.each(function(i) { $(this).attr('id', squareIDs[i]); });
   };
 
-  /**
-   * Attach DOM event handlers
-   */
+  
   var attachDOMEventHandlers = function() {
 
-    // Highlight valid moves for white pieces
+   
     if (playerColor === 'white') {
       container.on('click', '.white.pawn', function(ev) {
         if (gameState.activePlayer && gameState.activePlayer.color === playerColor) {
@@ -134,7 +128,7 @@ var socket      = null;
       });
     }
 
-    // Highlight valid moves for black pieces
+    
     if (playerColor === 'black') {
       container.on('click', '.black.pawn',   function(ev) {
         if (gameState.activePlayer && gameState.activePlayer.color === playerColor) {
@@ -168,16 +162,16 @@ var socket      = null;
       });
     }
 
-    // Clear all move highlights
+    
     container.on('click', '.empty', function(ev) {
       clearHighlights();
     });
 
-    // Perform a regular move
+   
     container.on('click', '.valid-move', function(ev) {
       var m = move(ev.target);
 
-      // Test for pawn promotion
+     
       if (/wP....8/.test(m) || /bP....1/.test(m)) {
         showPawnPromotionPrompt(function(p) {
           // replace piece
@@ -190,11 +184,11 @@ var socket      = null;
       }
     });
 
-    // Perform a regular capture
+    
     container.on('click', '.valid-capture', function(ev) {
       var m = capture(ev.target);
 
-      // Test for pawn promotion
+     
       if (/wP....8/.test(m) || /bP....1/.test(m)) {
         showPawnPromotionPrompt(function(p) {
           // replace piece
@@ -207,21 +201,21 @@ var socket      = null;
       }
     });
 
-    // Perform an en passant capture
+   
     container.on('click', '.valid-en-passant-capture', function(ev) {
       var m = capture(ev.target);
       messages.empty();
       socket.emit('move', {gameID: gameID, move: m+'ep'});
     });
 
-    // Perform a castle
+   
     container.on('click', '.valid-castle', function(ev) {
       var m = castle(ev.target);
       messages.empty();
       socket.emit('move', {gameID: gameID, move: m});
     });
 
-    // Forfeit game
+    
     container.on('click', '#forfeit', function(ev) {
       showForfeitPrompt(function(confirmed) {
         if (confirmed) {
@@ -232,33 +226,29 @@ var socket      = null;
     });
   };
 
-  /**
-   * Attach Socket.IO event handlers
-   */
+  
   var attachSocketEventHandlers = function() {
 
-    // Update UI with new game state
+   
     socket.on('update', function(data) {
       console.log(data);
       gameState = data;
       update();
     });
 
-    // Display an error
+    
     socket.on('error', function(data) {
       console.log(data);
       showErrorMessage(data);
     });
   };
 
-  /**
-   * Highlight valid moves for the selected piece
-   */
+  
   var highlightValidMoves = function(piece, selectedSquare) {
     var square = $(selectedSquare);
     var move   = null;
 
-    // Set selection object
+    
     selection = {
       color: piece[0],
       piece: piece[1],
@@ -266,11 +256,11 @@ var socket      = null;
       rank:  square.attr('id')[1]
     };
 
-    // Highlight the selected square
+    
     squares.removeClass('selected');
     square.addClass('selected');
 
-    // Highlight any valid moves
+    
     squares.removeClass('valid-move valid-capture valid-en-passant-capture valid-castle');
     for (var i=0; i<gameState.validMoves.length; i++) {
       move = gameState.validMoves[i];
@@ -310,9 +300,7 @@ var socket      = null;
     }
   };
 
-  /**
-   * Clear valid move highlights
-   */
+  
   var clearHighlights = function() {
     squares.removeClass('selected');
     squares.removeClass('valid-move');
@@ -321,9 +309,7 @@ var socket      = null;
     squares.removeClass('valid-castle');
   };
 
-  /**
-   * Move selected piece to destination square
-   */
+  
   var move = function(destinationSquare) {
     var piece = selection.color+selection.piece;
     var src   = $('#'+selection.file+selection.rank);
@@ -331,17 +317,15 @@ var socket      = null;
 
     clearHighlights();
 
-    // Move piece on board
+    
     src.removeClass(getPieceClasses(piece)).addClass('empty');
     dest.removeClass('empty').addClass(getPieceClasses(piece));
 
-    // Return move string
+  
     return piece+selection.file+selection.rank+'-'+dest.attr('id');
   };
 
-  /**
-   * Move selected piece to destination square and capture an opponents piece
-   */
+
   var capture = function(destinationSquare) {
     var piece = selection.color+selection.piece;
     var src   = $('#'+selection.file+selection.rank);
@@ -349,17 +333,15 @@ var socket      = null;
 
     clearHighlights();
 
-    // Move piece on board
+   
     src.removeClass(getPieceClasses(piece)).addClass('empty');
     dest.removeClass(gameClasses).addClass(getPieceClasses(piece));
 
-    // Return move string
+   
     return piece+selection.file+selection.rank+'x'+dest.attr('id');
   };
 
-  /**
-   * Castle the selected king
-   */
+ 
   var castle = function(destinationSquare) {
     var moveString = '';
 
@@ -407,18 +389,16 @@ var socket      = null;
     return moveString;
   }
 
-  /**
-   * Update UI from game state
-   */
+  
   var update = function() {
     var you, opponent = null;
 
     var container, name, status, captures = null;
 
-    // Update player info
+   
     for (var i=0; i<gameState.players.length; i++) {
 
-      // Determine if player is you or opponent
+     
       if (gameState.players[i].color === playerColor) {
         you = gameState.players[i];
         container = $('#you');
@@ -432,24 +412,24 @@ var socket      = null;
       status   = container.find('.status');
       captures = container.find('ul');
 
-      // Name
+      
       if (gameState.players[i].name) {
         name.text(gameState.players[i].name);
       }
 
-      // Active Status
+      
       container.removeClass('active-player');
       if (gameState.activePlayer && gameState.activePlayer.color === gameState.players[i].color) {
         container.addClass('active-player');
       }
 
-      // Check Status
+     
       status.removeClass('label label-danger').text('');
       if (gameState.players[i].inCheck) {
         status.addClass('label label-danger').text('Check');
       }
 
-      // Captured Pieces
+     
       captures.empty();
       for (var j=0; j<gameState.capturedPieces.length; j++) {
         if (gameState.capturedPieces[j][0] !== gameState.players[i].color[0]) {
@@ -458,7 +438,7 @@ var socket      = null;
       }
     }
 
-    // Update board
+    
     for (var sq in gameState.board) {
       $('#'+sq).removeClass(gameClasses).addClass(getPieceClasses(gameState.board[sq]));
     }
@@ -505,9 +485,7 @@ var socket      = null;
     }
   };
 
-  /**
-   * Display an error message on the page
-   */
+ 
   var showErrorMessage = function(data) {
     var msg, html = '';
 
@@ -521,13 +499,11 @@ var socket      = null;
     messages.append(html);
   };
 
-  /**
-   * Display the "Game Over" window
-   */
+ 
   var showGameOverMessage = function(type) {
     var header = gameOverMessage.find('h2');
 
-    // Set the header's content and CSS classes
+
     header.removeClass('alert-success alert-danger alert-warning');
     switch (type) {
       case 'checkmate-win'  : header.addClass('alert-success').text('Szach-mat'); break;
@@ -540,15 +516,13 @@ var socket      = null;
     gameOverMessage.modal('show');
   };
 
-  /**
-   * Display the "Pawn Promotion" prompt
-   */
+
   var showPawnPromotionPrompt = function(callback) {
 
-    // Set the pieces' color to match the player's color
+ 
     pawnPromotionPrompt.find('label').removeClass('black white').addClass(playerColor);
 
-    // Temporarily attach click handler for the Promote button, note the use of .one()
+
     pawnPromotionPrompt.one('click', 'button', function(ev) {
       var selection = pawnPromotionPrompt.find("input[type='radio'][name='promotion']:checked").val();
       callback('p'+selection);
@@ -558,18 +532,16 @@ var socket      = null;
     pawnPromotionPrompt.modal('show');
   };
 
-  /**
-   * Display the "Forfeit Game" confirmation prompt
-   */
+
   var showForfeitPrompt = function(callback) {
 
-    // Temporarily attach click handler for the Cancel button, note the use of .one()
+
     forfeitPrompt.one('click', '#cancel-forfeit', function(ev) {
       callback(false);
       forfeitPrompt.modal('hide');
     });
 
-    // Temporarily attach click handler for the Confirm button, note the use of .one()
+
     forfeitPrompt.one('click', '#confirm-forfeit', function(ev) {
       callback(true);
       forfeitPrompt.modal('hide');
@@ -578,9 +550,7 @@ var socket      = null;
     forfeitPrompt.modal('show');
   };
 
-  /**
-   * Get the corresponding CSS classes for a given piece
-   */
+
   var getPieceClasses = function(piece) {
     switch (piece) {
       case 'bP'  : return 'black pawn';

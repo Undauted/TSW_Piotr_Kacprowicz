@@ -16,13 +16,13 @@ var people = {};
 var cookieParser = express.cookieParser('Cookie')
   , sessionStore = new express.session.MemoryStore();
 
-// Settings
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.engine('jade', require('jade').__express);
 
-// Middleware
+
 app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
@@ -34,11 +34,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-/*
- * Only allow socket connections that come from clients with an established session.
- * This requires re-purposing Express's cookieParser middleware in order to expose
- * the session info to Socket.IO
- */
+
 io.set('authorization', function (handshakeData, callback) {
   cookieParser(handshakeData, {}, function(err) {
     if (err) return callback(err);
@@ -51,7 +47,7 @@ io.set('authorization', function (handshakeData, callback) {
   });
 });
 
-// Attach routes
+
 httpRoutes.attach(app, DB);
 socketRoutes.attach(io, DB);
 
@@ -68,7 +64,7 @@ io.sockets.on('connection', function (socket) {
 	});
 });
 
-// And away we go
+
 server.listen(app.get('port'), function(){
   console.log('Chess is listening on port ' + app.get('port'));
 });
