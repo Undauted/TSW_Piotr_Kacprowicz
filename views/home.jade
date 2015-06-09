@@ -37,6 +37,17 @@ block content
           button.btn.btn-primary(type="submit") Dołącz
 
     
+    .container
+    ul#content
+         
+    footer
+      input#name(type='text', placeholder='Nick')
+                
+      input#text(type='text', placeholder='wiadomosc...')
+                 
+      input#senden.btn.btn-primary(type='submit', value='Wyślij') 
     
-  script(src="/js/jquery.min.js")
+   script(src="/js/jquery.min.js")
   script(src="/js/bootstrap.min.js")
+  script(src="/socket.io/socket.io.js")
+  script(src="/js/chat.js")

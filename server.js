@@ -56,6 +56,18 @@ io.set('authorization', function (handshakeData, callback) {
 httpRoutes.attach(app, DB);
 socketRoutes.attach(io, DB);
 
+app.get('/', function (req, res) {
+	res.sendfile(__dirname + '/views/home.jade');
+});
+
+io.sockets.on('connection', function (socket) {
+	
+	socket.emit('chat', { zeit: new Date(), text: 'Witamy w grze przeglądarkowej szachy. Poniżej można rozmawiać lub wklejać ID stołów' });
+	
+	socket.on('chat', function (data) {
+		io.sockets.emit('chat', { zeit: new Date(), name: data.name || 'Anonym', text: data.text });
+	});
+});
 
 // And away we go
 server.listen(app.get('port'), function(){
