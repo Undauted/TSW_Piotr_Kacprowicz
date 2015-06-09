@@ -62,10 +62,10 @@ app.get('/', function (req, res) {
 
 io.sockets.on('connection', function (socket) {
 	
-	socket.emit('chat', { zeit: new Date(), text: 'Witamy w grze przeglądarkowej szachy. Poniżej można rozmawiać lub wklejać ID stołów' });
+	socket.emit('chat', { hour: new Date(), text: 'Witamy w grze przeglądarkowej szachy. Poniżej można rozmawiać lub wklejać ID stołów' });
 	
 	socket.on('chat', function (data) {
-		io.sockets.emit('chat', { zeit: new Date(), name: data.name || 'Anonym', text: data.text });
+		io.sockets.emit('chat', { hour: new Date(), name: data.name || 'Anonym', text: data.text });
 	});
 });
 

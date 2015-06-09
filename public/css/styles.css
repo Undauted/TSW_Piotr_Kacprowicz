@@ -166,4 +166,11 @@ input#text{
 	list-style: none;
 }
 
+ul{
+
+    height: 7em;
+     overflow: scroll;
+    overflow-x: hidden;
+}
+
 
