@@ -6,6 +6,7 @@ var path         = require('path')
   , socketRoutes = require('./routes/socket')
   , GameStore    = require('./lib/GameStore');
 
+
 var app    = express()
   , server = http.createServer(app)
   , io     = socket.listen(server);
@@ -20,8 +21,6 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.engine('jade', require('jade').__express);
-
-
 
 // Middleware
 app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
