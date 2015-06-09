@@ -426,7 +426,7 @@ var socket      = null;
      
       status.removeClass('label label-danger').text('');
       if (gameState.players[i].inCheck) {
-        status.addClass('label label-danger').text('Check');
+        status.addClass('label label-danger').text('Szach');
       }
 
      
