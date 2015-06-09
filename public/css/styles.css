@@ -164,13 +164,10 @@ input#text{
 #content{
 	margin: 48px 0.5em;
 	list-style: none;
-}
-
-ul{
-
-    height: 7em;
+       height: 7em;
      overflow: scroll;
     overflow-x: hidden;
 }
+
 
 
